@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project>
+	
+	<meta title="CHAOSSHOWCASE" package="com.sample.chaosshowcase" version="1.0.0" company="Company Name" />
+	<app main="Main" path="Export" file="CHAOSSHOWCASE" />
+	
+	<source path="Source" />
+	<source path="../_FRAMEWORK/CHAOS_UI_HX" /> 
+	
+	<haxelib name="openfl" />
+	<haxelib name="actuate" />
+	
+	<assets path="Assets" rename="assets" />
+	
+</project>
