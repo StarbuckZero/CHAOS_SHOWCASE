@@ -1,5 +1,6 @@
 package;
 
+import com.chaos.ui.theming.Theme;
 import com.chaos.utils.Utils;
 import com.chaos.ui.layout.BaseContainer;
 import com.chaos.ui.BaseUI;
@@ -59,6 +60,12 @@ class Main extends Sprite
 
 	private var _lastSection:BaseContainer;
 
+	private var _themeDefault:Theme;
+	private var _redTheme:Theme;
+	private var _greenTheme:Theme;
+	private var _blueTheme:Theme;
+	
+
 	public function new()
 	{
 		super();
@@ -76,6 +83,12 @@ class Main extends Sprite
 		
 		addChild(accordion);
 		addChild(_uiDemoSection);
+
+		// Theme system
+		_themeDefault = new Theme();
+		_redTheme = new Theme({"primaryColor":0xFF0000,"secondaryColor":0xAA0202});
+		_greenTheme = new Theme({"primaryColor":0x18af03,"secondaryColor":0x66ff00});
+		_blueTheme = new Theme({"primaryColor":0x19a4de,"secondaryColor":0x0066ff});
 	}
 
 	private function onUIComponentClick(event:MouseEvent):Void {
@@ -121,9 +134,9 @@ class Main extends Sprite
 		var scrollBar : ScrollBar;
 		var scrollPane :ScrollPane;
 		var itemPane : ItemPane;
-		var menu : Menu;
 		var accordion:Accordion;
-		var card:Card;		
+
+		var themeList : ComboBox;
 
 		var content:BaseContainer = new BaseContainer({"width": stage.stageWidth - 300, "height":stage.stageHeight,"x":300,"y":0,"background":false});
 		content.visible = false;
@@ -316,41 +329,67 @@ class Main extends Sprite
         
         accordion  = new Accordion({"width":300,"height":160,"data":sectionArray,"x":menu.x + menu.width + OFFSET, "y":(menu.y )});
 
-        var cardlabel:Label = new Label({"text":"Card", "width":100, "height":40,"textColor":0x000000,"y": 20 });
-        card = new Card({"width":100,"height":60,"x":accordion.x + accordion.width + OFFSET,"y": accordion.y,"roundEdge":10,"content":cardlabel});
+        // List
+		var themeData:Array<Dynamic> = new Array<Dynamic>();
+		themeData.push({"text":"Default", "value":"default"});
+		themeData.push({"text":"Red", "value":"red"});
+		themeData.push({"text":"Green", "value":"green"});
+		themeData.push({"text":"Blue", "value":"blue"});
+		
+		var themeObj:Dynamic = {"name":"themeList","width":100,"height":20,"rowCount":4,"data":themeData,"x":(accordion.x + accordion.width + OFFSET),"y":accordion.y  };
+        themeList = new ComboBox(themeObj);
 
+		var themeButton:Button = new Button({"text":"Apply","width":100,"height":20,"x":themeList.x + themeList.width + OFFSET, "y":themeList.y});
+		themeButton.addEventListener(MouseEvent.CLICK,onThemeBtnClick,false,0,true);
 
         ThreadManager.stage = stage;
         Slider.sliderEventMode = Slider.TIMER_MODE;
         
-        content.addChild(button.displayObject);
-        content.addChild(iconButton.displayObject);
-        content.addChild(iconTextButton.displayObject);
-        content.addChild(list.displayObject);
+        content.addElement(button);
+        content.addElement(iconButton);
+        content.addElement(iconTextButton);
+        content.addElement(list);
         
-        content.addChild(progressBar.displayObject);
-        content.addChild(progressSlider.displayObject);
-        content.addChild(toggleButton.displayObject);
-        content.addChild(combo.displayObject);
-        content.addChild(checkBoxGroup.displayObject);
-        content.addChild(radioButtonGroup.displayObject);
-        content.addChild(label.displayObject);
+        content.addElement(progressBar);
+        content.addElement(progressSlider);
+        content.addElement(toggleButton);
+        content.addElement(combo);
+        content.addElement(checkBoxGroup);
+        content.addElement(radioButtonGroup);
+        content.addElement(label);
         content.addChild(toolTipBox);
-        content.addChild(inputBox.displayObject);
-        content.addChild(alertButton.displayObject);
-        content.addChild(showWindowButton.displayObject);
-        content.addChild(tabPane.displayObject);
-        content.addChild(scrollBar.displayObject);
+        content.addElement(inputBox);
+        content.addElement(alertButton);
+        content.addElement(showWindowButton);
+        content.addElement(tabPane);
+        content.addElement(scrollBar);
         content.addChild(dummyText);
-        content.addChild(scrollPane.displayObject);
+        content.addElement(scrollPane);
         
-        content.addChild(itemPane);
-        content.addChild(menu.displayObject);
-        content.addChild(accordion);
-        content.addChild(card);
-        content.addChild(window.displayObject);		
+        content.addElement(itemPane);
+        content.addElement(menu);
+        content.addElement(accordion);
+        content.addElement(window);		
+		content.addElement(themeList);
+		content.addElement(themeButton);
 
 		return content;
+	}
+
+	private function onThemeBtnClick(event : Event ) : Void {
+		var combo:ComboBox = cast(Utils.getNestedChild(_lastSection,"themeList"),ComboBox);
+		
+		switch(combo.getSelected().value) {
+
+			case "default":
+				_themeDefault.apply();
+			case "red":
+				_redTheme.apply();
+			case "green":
+				_greenTheme.apply();				
+			case "blue":
+				_blueTheme.apply();							
+		}
 	}
 
 	private function onHideWindow(event : WindowEvent) : Void
