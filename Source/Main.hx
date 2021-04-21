@@ -70,11 +70,21 @@ class Main extends Sprite
 	{
 		super();
 
+		// Theme system
+		_themeDefault = new Theme();
+		_redTheme = new Theme({"primaryColor":0xFF0000,"secondaryColor":0xfdccd4,"selectedColor":0xFF3656,"primaryTextColor":0x000000,"secondaryTextColor":0xFFFFFF,"highlightColor":0xa40621,"shadowColor":0xf6143a});
+		_greenTheme = new Theme({"primaryColor":0x00FF00,"secondaryColor":0x65aa1b,"selectedColor":0x4d8014,"primaryTextColor":0x000000,"secondaryTextColor":0xFFFFFF,"highlightColor":0xade86c,"shadowColor":0x4d8014});
+		_blueTheme = new Theme({"primaryColor":0x0000FF,"secondaryColor":0x0c91f0,"selectedColor":0x4d8014,"primaryTextColor":0x000000,"secondaryTextColor":0xFFFFFF,"highlightColor":0x0c91f0,"shadowColor":0x064471});
+
+		// Set default theme
+		_themeDefault.apply();
+
+		// Setup Sections
 		var uiComponentButton:Button = new Button({"name":"ui","text":"UI Components","width":300,"height":20});
 		var accordionLabel2:Label = new Label({"text":"Section 2","width":100,"height":20});
 		var accordionLabel3:Label = new Label({"text":"Section 3","width":100,"height":20});
 
-        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":uiComponentButton},{"name":"Section2","text":"Section 2","content":accordionLabel2},{"name":"Section3","text":"Section 3","content":accordionLabel3}];
+        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":uiComponentButton},{"name":"Section2","text":"Sound Manager","content":accordionLabel2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
         
         accordion  = new Accordion({"width":300,"height":stage.stageHeight,"data":sectionArray,"x":0, "y":0});
 
@@ -84,11 +94,7 @@ class Main extends Sprite
 		addChild(accordion);
 		addChild(_uiDemoSection);
 
-		// Theme system
-		_themeDefault = new Theme();
-		_redTheme = new Theme({"primaryColor":0xFF0000,"secondaryColor":0xAA0202});
-		_greenTheme = new Theme({"primaryColor":0x18af03,"secondaryColor":0x66ff00});
-		_blueTheme = new Theme({"primaryColor":0x19a4de,"secondaryColor":0x0066ff});
+
 	}
 
 	private function onUIComponentClick(event:MouseEvent):Void {
@@ -369,9 +375,9 @@ class Main extends Sprite
         content.addElement(itemPane);
         content.addElement(menu);
         content.addElement(accordion);
-        content.addElement(window);		
 		content.addElement(themeList);
 		content.addElement(themeButton);
+		content.addElement(window);		
 
 		return content;
 	}
@@ -379,6 +385,9 @@ class Main extends Sprite
 	private function onThemeBtnClick(event : Event ) : Void {
 		var combo:ComboBox = cast(Utils.getNestedChild(_lastSection,"themeList"),ComboBox);
 		
+		if(combo.getSelected() == null)
+			return;
+
 		switch(combo.getSelected().value) {
 
 			case "default":

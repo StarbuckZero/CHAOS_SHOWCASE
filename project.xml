@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <project>
 	
-	<meta title="CHAOSSHOWCASE" package="com.sample.chaosshowcase" version="1.0.0" company="Company Name"  />
+	<meta title="CHAOS Framework Showcase" package="com.chaos.chaosshowcase" version="1.0.0" company="Company Name"  />
 	<app main="Main" path="Export" file="CHAOSSHOWCASE" />
-	<window width="1920" height="1080" />
-	
+	<window width="1280" height="720" />
+
 	<source path="Source" />
 
 	<!-- This will have to be pointed to haxelib at some point, right now change to the correct path on your PC -->
