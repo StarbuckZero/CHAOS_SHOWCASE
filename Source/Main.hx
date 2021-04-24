@@ -1,5 +1,7 @@
 package;
 
+import com.chaos.mobile.ui.Carousel;
+import com.chaos.mobile.ui.Breadcrumb;
 import com.chaos.ui.theming.Theme;
 import com.chaos.utils.Utils;
 import com.chaos.ui.layout.BaseContainer;
@@ -56,9 +58,11 @@ import openfl.text.TextField;
 class Main extends Sprite
 {
 	private var accordion:Accordion;
-	private var _uiDemoSection:BaseContainer;
 
-	private var _lastSection:BaseContainer;
+	private var _uiDemoSection:Sprite;
+	private var _mobileUIDemo:Sprite;
+
+	private var _lastSection:Sprite;
 
 	private var _themeDefault:Theme;
 	private var _redTheme:Theme;
@@ -79,20 +83,30 @@ class Main extends Sprite
 		// Set default theme
 		_themeDefault.apply();
 
-		// Setup Sections
+		// Setup Sections 1
+		var secton1:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
 		var uiComponentButton:Button = new Button({"name":"ui","text":"UI Components","width":300,"height":20});
+		var mobileComponentButton:Button = new Button({"name":"mobile","text":"Mobile Components","width":300,"height":20,"y":uiComponentButton.y + uiComponentButton.height});
+
+		secton1.addElement(uiComponentButton);
+		secton1.addElement(mobileComponentButton);
+
 		var accordionLabel2:Label = new Label({"text":"Section 2","width":100,"height":20});
 		var accordionLabel3:Label = new Label({"text":"Section 3","width":100,"height":20});
 
-        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":uiComponentButton},{"name":"Section2","text":"Sound Manager","content":accordionLabel2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
+        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":accordionLabel2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
         
         accordion  = new Accordion({"width":300,"height":stage.stageHeight,"data":sectionArray,"x":0, "y":0});
 
 		uiComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		mobileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		
 		_uiDemoSection = creeateUIDemo();
+		_mobileUIDemo = createMoblieDemo();
 		
 		addChild(accordion);
 		addChild(_uiDemoSection);
+		addChild(_mobileUIDemo);
 
 
 	}
@@ -109,11 +123,18 @@ class Main extends Sprite
 			case "ui":
 				_uiDemoSection.visible = true;
 				_lastSection = _uiDemoSection;
+			case "mobile":
+				_mobileUIDemo.visible = true;
+				_lastSection = _mobileUIDemo;
 		}
 		
 	}
 
-	private function creeateUIDemo():BaseContainer {
+	//////////////////
+	// Desktop UI  //
+	////////////////
+
+	private function creeateUIDemo():Sprite {
 
 		var OFFSET : Int = 20;
     
@@ -144,7 +165,8 @@ class Main extends Sprite
 
 		var themeList : ComboBox;
 
-		var content:BaseContainer = new BaseContainer({"width": stage.stageWidth - 300, "height":stage.stageHeight,"x":300,"y":0,"background":false});
+		var content:Sprite = new Sprite();
+		content.x = 300;
 		content.visible = false;
 
         // Standard Button
@@ -351,33 +373,33 @@ class Main extends Sprite
         ThreadManager.stage = stage;
         Slider.sliderEventMode = Slider.TIMER_MODE;
         
-        content.addElement(button);
-        content.addElement(iconButton);
-        content.addElement(iconTextButton);
-        content.addElement(list);
+        content.addChild(button);
+        content.addChild(iconButton);
+        content.addChild(iconTextButton);
+        content.addChild(list);
         
-        content.addElement(progressBar);
-        content.addElement(progressSlider);
-        content.addElement(toggleButton);
-        content.addElement(combo);
-        content.addElement(checkBoxGroup);
-        content.addElement(radioButtonGroup);
-        content.addElement(label);
+        content.addChild(progressBar);
+        content.addChild(progressSlider);
+        content.addChild(toggleButton);
+        content.addChild(combo);
+        content.addChild(checkBoxGroup);
+        content.addChild(radioButtonGroup);
+        content.addChild(label);
         content.addChild(toolTipBox);
-        content.addElement(inputBox);
-        content.addElement(alertButton);
-        content.addElement(showWindowButton);
-        content.addElement(tabPane);
-        content.addElement(scrollBar);
+        content.addChild(inputBox);
+        content.addChild(alertButton);
+        content.addChild(showWindowButton);
+        content.addChild(tabPane);
+        content.addChild(scrollBar);
         content.addChild(dummyText);
-        content.addElement(scrollPane);
+        content.addChild(scrollPane);
         
-        content.addElement(itemPane);
-        content.addElement(menu);
-        content.addElement(accordion);
-		content.addElement(themeList);
-		content.addElement(themeButton);
-		content.addElement(window);		
+        content.addChild(itemPane);
+        content.addChild(menu);
+        content.addChild(accordion);
+		content.addChild(themeList);
+		content.addChild(themeButton);
+		content.addChild(window);		
 
 		return content;
 	}
@@ -421,4 +443,30 @@ class Main extends Sprite
 	{
 		trace(cast(event.currentTarget, Button).name);
 	}
+
+
+	//////////////////
+	// Mobie UI    //
+	////////////////	
+
+	private function createMoblieDemo() : Sprite {
+
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+		var breadcrumb:Breadcrumb = new Breadcrumb({"width":200,"height":30});
+		breadcrumb.addLevel("Level1");
+		breadcrumb.addLevel("Level2");
+		breadcrumb.addLevel("Level3");
+
+		var card:Card = new Card({});
+
+		var Carousel:Carousel = new Carousel({});
+
+		content.addChild(breadcrumb);
+
+		return content;
+	}
+
 }
