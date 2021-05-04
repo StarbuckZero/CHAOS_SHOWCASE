@@ -1,5 +1,7 @@
 package;
 
+import com.chaos.mobile.ui.MobileButton;
+import com.chaos.mobile.ui.event.BreadcrumbEvent;
 import com.chaos.mobile.ui.Carousel;
 import com.chaos.mobile.ui.Breadcrumb;
 import com.chaos.ui.theming.Theme;
@@ -57,6 +59,8 @@ import openfl.text.TextField;
 
 class Main extends Sprite
 {
+	public var OFFSET : Int = 20;
+
 	private var accordion:Accordion;
 
 	private var _uiDemoSection:Sprite;
@@ -68,7 +72,8 @@ class Main extends Sprite
 	private var _redTheme:Theme;
 	private var _greenTheme:Theme;
 	private var _blueTheme:Theme;
-	
+
+	private var _levelNum:Int = 0;
 
 	public function new()
 	{
@@ -81,7 +86,7 @@ class Main extends Sprite
 		_blueTheme = new Theme({"primaryColor":0x0000FF,"secondaryColor":0x0c91f0,"selectedColor":0x4d8014,"primaryTextColor":0x000000,"secondaryTextColor":0xFFFFFF,"highlightColor":0x0c91f0,"shadowColor":0x064471});
 
 		// Set default theme
-		_themeDefault.apply();
+		//_themeDefault.apply();
 
 		// Setup Sections 1
 		var secton1:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
@@ -100,7 +105,7 @@ class Main extends Sprite
 
 		uiComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		mobileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
-		
+
 		_uiDemoSection = creeateUIDemo();
 		_mobileUIDemo = createMoblieDemo();
 		
@@ -136,7 +141,7 @@ class Main extends Sprite
 
 	private function creeateUIDemo():Sprite {
 
-		var OFFSET : Int = 20;
+		
     
 		var GANGSTA_TEXT : String = "Lorem fizzle dolizzle own yo' amizzle, consectetuer adipiscing gangster. Nullizzle sapizzle fo shizzle, uhuh ... yih! shut the shizzle up, suscipizzle quis, you son of a bizzle vel, arcu. Pellentesque for sure its fo rizzle. Sizzle erizzle. Dang izzle dolizzle dapibus the bizzle tempus shizznit. Maurizzle pellentesque nibh et turpis. Pimpin' in i saw beyonces tizzles and my pizzle went crizzle. Pellentesque eleifend rhoncizzle nisi. In yippiyo break yo neck, yall platea dictumst. The bizzle dapibizzle. Curabitur daahng dawg shut the shizzle up, pretizzle own yo', mattizzle ac, eleifend check it out, nunc. Rizzle suscipizzle. Integer gangsta black purus.\n\nCurabitizzle doggy i'm in the shizzle for sure nisi that's the shizzle mollizzle. Suspendisse potenti. Morbi da bomb. Vivamizzle neque. Crizzle orci. Cras pimpin' brizzle, interdizzle uhuh ... yih!, phat sit amet, stuff izzle, shizzlin dizzle. Pellentesque things. That's the shizzle daahng dawg mi, volutpizzle in, sagittis sizzle, funky fresh semper, i saw beyonces tizzles and my pizzle went crizzle. Bizzle its fo rizzle ipsum. Break it down volutpizzle felis vel uhuh ... yih!. Crizzle ma nizzle justo hizzle purus sodales ornare. Shiz venenatizzle check it out et funky fresh. Nunc sizzle. Suspendisse dizzle placerizzle mah nizzle. Curabitur yippiyo dang. Nunc shizzlin dizzle, leo eu dapibus hendrerizzle, ipsum get down get down fo shizzle sem, in aliquet magna pimpin' luctizzle pede. Fo shizzle a nisl. Class aptent cool dizzle pot ass boom shackalack conubia nostra, pizzle inceptos hymenaeos. Aliquam interdizzle, neque nizzle break yo neck, yall fo, phat orci its fo rizzle leo, shit semper things i saw beyonces tizzles and my pizzle went crizzle dizzle sizzle.";
 		
@@ -455,18 +460,52 @@ class Main extends Sprite
 		content.x = 300;
 		content.visible = false;
 
-		var breadcrumb:Breadcrumb = new Breadcrumb({"width":200,"height":30});
-		breadcrumb.addLevel("Level1");
-		breadcrumb.addLevel("Level2");
-		breadcrumb.addLevel("Level3");
+				
+		var breadcrumb:Breadcrumb = new Breadcrumb({"name":"breadcrumb", "width":400,"height":20});
+		breadcrumb.addEventListener(BreadcrumbEvent.SELECTED,onLevelSelected,false,0,true);
+
+		var addButton:MobileButton = new MobileButton({"name":"addCrumbBtn","text":"Add Level","width":100,"height":20,"x":breadcrumb.x + breadcrumb.width + OFFSET, "y":breadcrumb.y});
+		addButton.addEventListener(MouseEvent.CLICK, addBreadcrumb , false, 0, true);
+
 
 		var card:Card = new Card({});
 
 		var Carousel:Carousel = new Carousel({});
 
 		content.addChild(breadcrumb);
+		content.addChild(addButton);
 
 		return content;
 	}
+
+	private function addBreadcrumb( event:Event ):Void {
+
+		if(cast(Utils.getNestedChild(_lastSection,"addCrumbBtn"), MobileButton).enabled) {
+			var breadcrumb:Breadcrumb = cast(Utils.getNestedChild(_lastSection,"breadcrumb"), Breadcrumb);
+			breadcrumb.addLevel("Level" + (_levelNum + 1));
+			
+			_levelNum++;
+	
+			var button:MobileButton = cast(Utils.getNestedChild(_lastSection,"addCrumbBtn"), MobileButton);
+			button.enabled = (_levelNum <= 5);
+			button.draw();
+	
+		}
+	}
+
+	private function onLevelSelected( event:BreadcrumbEvent ): Void {
+		var breadcrumb:Breadcrumb = cast(Utils.getNestedChild(_lastSection,"breadcrumb"), Breadcrumb);
+		breadcrumb.jumpToLevel(event.level + 1);
+		
+
+		_levelNum = event.level + 1;
+
+		var button:MobileButton = cast(Utils.getNestedChild(_lastSection,"addCrumbBtn"), MobileButton);
+		button.enabled = (_levelNum <= 5);
+		button.draw();
+
+	}
+
+	
 
 }
