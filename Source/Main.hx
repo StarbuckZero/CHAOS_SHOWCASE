@@ -1,5 +1,10 @@
 package;
 
+import com.chaos.mobile.ui.ToggleSwitch;
+import com.chaos.mobile.ui.event.NavigationMenuEvent;
+import com.chaos.mobile.ui.NavigationMenu;
+import com.chaos.mobile.ui.MobileDropDown;
+import com.chaos.mobile.ui.MobileButtonList;
 import com.chaos.mobile.ui.MobileButton;
 import com.chaos.mobile.ui.event.BreadcrumbEvent;
 import com.chaos.mobile.ui.Carousel;
@@ -468,12 +473,78 @@ class Main extends Sprite
 		addButton.addEventListener(MouseEvent.CLICK, addBreadcrumb , false, 0, true);
 
 
-		var card:Card = new Card({});
+		var cardLabel:Label = new Label({"name":"cardlabel","text":"Card","width":100,"height":20,"y": 30});
+		var card:Card = new Card({"name":"card","roundEdge":4,"width":100,"height":100,"x": breadcrumb.x + OFFSET, "y": breadcrumb.y + breadcrumb.height + OFFSET,"content":cardLabel});
 
-		var Carousel:Carousel = new Carousel({});
+		var carouselData:Array<Dynamic> = new Array<Dynamic>();
+		var button1:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0xFF0000});
+		var button2:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0x00FF00});
+		var button3:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0x0000FF});
+
+		carouselData.push({"name":"1","content":button1});
+		carouselData.push({"name":"2","content":button2});
+		carouselData.push({"name":"3","content":button3});
+
+		var carousel:Carousel = new Carousel({"name":"carousel","width":400,"height":200,"x":card.x + card.width + OFFSET,"y":card.y,"data":carouselData});
+
+		var buttonListData:Array<Dynamic> = new Array<Dynamic>();
+		buttonListData.push({"text":"Button 1"});
+		buttonListData.push({"text":"Button 2"});
+		buttonListData.push({"text":"Button 3"});
+		buttonListData.push({"text":"Button 4"});
+
+		var buttonList:MobileButtonList = new MobileButtonList({"name":"buttonList","width":100,"height":160,"x":card.x,"y":card.y + card.height + OFFSET,"data":buttonListData});
+
+		var buttonDropDownData:Array<Dynamic> = new Array<Dynamic>();
+		buttonDropDownData.push({"text":"Button 1"});
+		buttonDropDownData.push({"text":"Button 2"});
+		buttonDropDownData.push({"text":"Button 3"});
+		buttonDropDownData.push({"text":"Button 4"});
+
+		var mobileDropDown:MobileDropDown = new MobileDropDown({"name":"mobileDropDown","width":200,"height":20,"x": carousel.x,"y": carousel.y + carousel.height + OFFSET, "data":buttonDropDownData});
+
+		// Level One Menus
+		var navMenuLevel1_3Data:Array<Dynamic> = new Array<Dynamic>();
+		navMenuLevel1_3Data.push({"text":"Level 1-3-1"});
+		navMenuLevel1_3Data.push({"text":"Level 1-3-2"});
+		navMenuLevel1_3Data.push({"text":"Level 1-3-3"});
+		navMenuLevel1_3Data.push({"text":"Level 1-3-4"});
+
+		var navMenuLevel1Data:Array<Dynamic> = new Array<Dynamic>();
+		navMenuLevel1Data.push({"text":"Level 1-1"});
+		navMenuLevel1Data.push({"text":"Level 1-2"});
+		navMenuLevel1Data.push({"text":"Level 1-3","children":navMenuLevel1_3Data});
+		navMenuLevel1Data.push({"text":"Level 1-4"});
+
+		// Level Two Menus
+		var navMenuLevel4Data:Array<Dynamic> = new Array<Dynamic>();
+		navMenuLevel4Data.push({"text":"Level 4-1"});
+		navMenuLevel4Data.push({"text":"Level 4-2"});
+
+		var navMenuData:Array<Dynamic> = new Array<Dynamic>();
+		navMenuData.push({"text":"Main 1","children":navMenuLevel1Data});
+		navMenuData.push({"text":"Main 2"});
+		navMenuData.push({"text":"Main 3"});
+		navMenuData.push({"text":"Main 4","children":navMenuLevel4Data});
+		navMenuData.push({"text":"Main 5"});
+
+		var navigationMenu:NavigationMenu = new NavigationMenu({"name":"navMenu","width":400,"height":200,"x":mobileDropDown.x,"y":mobileDropDown.y + mobileDropDown.height + OFFSET,"data":navMenuData});
+		var backButton:MobileButton = new MobileButton({"name":"backBtn","text":"Navigation Back","width":100,"height":20,"x":navigationMenu.x + navigationMenu.width + OFFSET, "y":navigationMenu.y});
+		backButton.addEventListener(MouseEvent.CLICK, onNavMenuBack, false, 0, true);
+
+		var toggleSwitch:ToggleSwitch = new ToggleSwitch({"name":"toggleSwitch","width":40,"height":20,"x":carousel.x + carousel.width + OFFSET, "y":carousel.y});
+		
+
 
 		content.addChild(breadcrumb);
 		content.addChild(addButton);
+		content.addChild(card);
+		content.addChild(carousel);
+		content.addChild(buttonList);
+		content.addChild(navigationMenu);
+		content.addChild(mobileDropDown);
+		content.addChild(backButton);
+		content.addChild(toggleSwitch);
 
 		return content;
 	}
@@ -493,10 +564,16 @@ class Main extends Sprite
 		}
 	}
 
+	private function onNavMenuBack( event:MouseEvent ): Void {
+
+		var navigation:NavigationMenu = cast(Utils.getNestedChild(_lastSection,"navMenu"), NavigationMenu);
+		navigation.goToPrevious();
+
+	}
+
 	private function onLevelSelected( event:BreadcrumbEvent ): Void {
 		var breadcrumb:Breadcrumb = cast(Utils.getNestedChild(_lastSection,"breadcrumb"), Breadcrumb);
 		breadcrumb.jumpToLevel(event.level + 1);
-		
 
 		_levelNum = event.level + 1;
 
