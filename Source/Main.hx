@@ -70,6 +70,7 @@ class Main extends Sprite
 
 	private var _uiDemoSection:Sprite;
 	private var _mobileUIDemo:Sprite;
+	private var _soundDemo:Sprite;
 
 	private var _lastSection:Sprite;
 
@@ -101,22 +102,31 @@ class Main extends Sprite
 		secton1.addElement(uiComponentButton);
 		secton1.addElement(mobileComponentButton);
 
+		// Setup Section 2
+		var secton2:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
+		var soundComponentButton:Button = new Button({"name":"sound","text":"Left and Right Speak","width":300,"height":20});
+		
+		secton2.addChild(soundComponentButton);
+
 		var accordionLabel2:Label = new Label({"text":"Section 2","width":100,"height":20});
 		var accordionLabel3:Label = new Label({"text":"Section 3","width":100,"height":20});
 
-        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":accordionLabel2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
+        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":secton2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
         
         accordion  = new Accordion({"width":300,"height":stage.stageHeight,"data":sectionArray,"x":0, "y":0});
 
 		uiComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		mobileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		soundComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 
 		_uiDemoSection = creeateUIDemo();
 		_mobileUIDemo = createMoblieDemo();
+		_soundDemo = createSoundDemo();
 		
 		addChild(accordion);
 		addChild(_uiDemoSection);
 		addChild(_mobileUIDemo);
+		addChild(_soundDemo);
 
 
 	}
@@ -136,6 +146,9 @@ class Main extends Sprite
 			case "mobile":
 				_mobileUIDemo.visible = true;
 				_lastSection = _mobileUIDemo;
+			case "sound":
+				_soundDemo.visible = true;
+				_lastSection = _soundDemo;				
 		}
 		
 	}
@@ -456,7 +469,7 @@ class Main extends Sprite
 
 
 	//////////////////
-	// Mobie UI    //
+	// Moblie UI    //
 	////////////////	
 
 	private function createMoblieDemo() : Sprite {
@@ -467,7 +480,7 @@ class Main extends Sprite
 
 				
 		var breadcrumb:Breadcrumb = new Breadcrumb({"name":"breadcrumb", "width":400,"height":20});
-		breadcrumb.addEventListener(BreadcrumbEvent.SELECTED,onLevelSelected,false,0,true);
+		breadcrumb.addEventListener(BreadcrumbEvent.SELECTED, onLevelSelected,false,0,true);
 
 		var addButton:MobileButton = new MobileButton({"name":"addCrumbBtn","text":"Add Level","width":100,"height":20,"x":breadcrumb.x + breadcrumb.width + OFFSET, "y":breadcrumb.y});
 		addButton.addEventListener(MouseEvent.CLICK, addBreadcrumb , false, 0, true);
@@ -495,14 +508,6 @@ class Main extends Sprite
 
 		var buttonList:MobileButtonList = new MobileButtonList({"name":"buttonList","width":100,"height":160,"x":card.x,"y":card.y + card.height + OFFSET,"data":buttonListData});
 
-		var buttonDropDownData:Array<Dynamic> = new Array<Dynamic>();
-		buttonDropDownData.push({"text":"Button 1"});
-		buttonDropDownData.push({"text":"Button 2"});
-		buttonDropDownData.push({"text":"Button 3"});
-		buttonDropDownData.push({"text":"Button 4"});
-
-		var mobileDropDown:MobileDropDown = new MobileDropDown({"name":"mobileDropDown","width":200,"height":20,"x": carousel.x,"y": carousel.y + carousel.height + OFFSET, "data":buttonDropDownData});
-
 		// Level One Menus
 		var navMenuLevel1_3Data:Array<Dynamic> = new Array<Dynamic>();
 		navMenuLevel1_3Data.push({"text":"Level 1-3-1"});
@@ -528,12 +533,19 @@ class Main extends Sprite
 		navMenuData.push({"text":"Main 4","children":navMenuLevel4Data});
 		navMenuData.push({"text":"Main 5"});
 
-		var navigationMenu:NavigationMenu = new NavigationMenu({"name":"navMenu","width":400,"height":200,"x":mobileDropDown.x,"y":mobileDropDown.y + mobileDropDown.height + OFFSET,"data":navMenuData});
+		var navigationMenu:NavigationMenu = new NavigationMenu({"name":"navMenu","width":400,"height":200,"x":carousel.x,"y":carousel.y + carousel.height + OFFSET,"data":navMenuData});
 		var backButton:MobileButton = new MobileButton({"name":"backBtn","text":"Navigation Back","width":100,"height":20,"x":navigationMenu.x + navigationMenu.width + OFFSET, "y":navigationMenu.y});
 		backButton.addEventListener(MouseEvent.CLICK, onNavMenuBack, false, 0, true);
 
 		var toggleSwitch:ToggleSwitch = new ToggleSwitch({"name":"toggleSwitch","width":40,"height":20,"x":carousel.x + carousel.width + OFFSET, "y":carousel.y});
 		
+		var buttonDropDownData:Array<Dynamic> = new Array<Dynamic>();
+		buttonDropDownData.push({"text":"Button 1"});
+		buttonDropDownData.push({"text":"Button 2"});
+		buttonDropDownData.push({"text":"Button 3"});
+		buttonDropDownData.push({"text":"Button 4"});
+
+		var mobileDropDown:MobileDropDown = new MobileDropDown({"name":"mobileDropDown","width":200,"height":20,"x": toggleSwitch.x,"y": toggleSwitch.y + toggleSwitch.height + OFFSET, "data":buttonDropDownData});
 
 
 		content.addChild(breadcrumb);
@@ -581,6 +593,26 @@ class Main extends Sprite
 		button.enabled = (_levelNum <= 5);
 		button.draw();
 
+	}
+
+	//////////////////
+	// Sound Demo  //
+	////////////////	
+
+	private function createSoundDemo() : Sprite {
+
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+
+		var leftSoundButton:Button = new Button({"name":"leftSoundBtn","text":"Left","width":100,"height":20,"x":OFFSET,"y":OFFSET});
+		var rightSoundButton:Button = new Button({"name":"rightSoundBtn","text":"Right","width":100,"height":20,"x":leftSoundButton.x + leftSoundButton.width + OFFSET,"y":leftSoundButton.y});
+		
+		content.addChild(leftSoundButton);
+		content.addChild(rightSoundButton);
+		
+		return content;
 	}
 
 	
