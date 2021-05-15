@@ -1,7 +1,9 @@
 package;
 
+import sys.FileSystem;
+import com.chaos.media.SoundManager;
 import com.chaos.mobile.ui.ToggleSwitch;
-import com.chaos.mobile.ui.event.NavigationMenuEvent;
+
 import com.chaos.mobile.ui.NavigationMenu;
 import com.chaos.mobile.ui.MobileDropDown;
 import com.chaos.mobile.ui.MobileButtonList;
@@ -12,26 +14,16 @@ import com.chaos.mobile.ui.Breadcrumb;
 import com.chaos.ui.theming.Theme;
 import com.chaos.utils.Utils;
 import com.chaos.ui.layout.BaseContainer;
-import com.chaos.ui.BaseUI;
-import com.chaos.ui.Label;
 import com.chaos.ui.Accordion;
-import com.chaos.ui.Accordion;
-import com.chaos.data.DataProvider;
 import com.chaos.ui.ScrollTextContent;
 import com.chaos.drawing.icon.ArrowRightIcon;
 import com.chaos.drawing.icon.StopIcon;
-import com.chaos.form.ui.InputField;
-import com.chaos.form.ui.RadioButtonList;
 import com.chaos.ui.Alert;
 import com.chaos.ui.Button;
 import com.chaos.ui.CheckBoxGroup;
 import com.chaos.ui.ComboBox;
 import com.chaos.ui.TextInput;
 import com.chaos.utils.CompositeManager;
-import com.chaos.ui.data.ComboBoxObjectData;
-import com.chaos.ui.data.ItemPaneObjectData;
-import com.chaos.ui.data.ListObjectData;
-import com.chaos.ui.data.MenuItemObjectData;
 import com.chaos.ui.event.WindowEvent;
 import com.chaos.ui.ItemPane;
 import com.chaos.ui.Label;
@@ -41,7 +33,6 @@ import com.chaos.ui.ProgressBar;
 import com.chaos.ui.ProgressSlider;
 import com.chaos.ui.RadioButtonGroup;
 import com.chaos.ui.ScrollBar;
-import com.chaos.ui.ScrollContentBase;
 import com.chaos.ui.ScrollPane;
 import com.chaos.ui.Slider;
 import com.chaos.ui.TabPane;
@@ -53,13 +44,11 @@ import com.chaos.mobile.ui.Card;
 import com.chaos.utils.ThreadManager;
 import com.chaos.ui.ScrollPolicy;
 
-import openfl.display.DisplayObject;
 import openfl.display.MovieClip;
 import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
-import openfl.geom.Rectangle;
 import openfl.text.TextField;
 
 class Main extends Sprite
@@ -81,9 +70,25 @@ class Main extends Sprite
 
 	private var _levelNum:Int = 0;
 
+	private var _soundManager:SoundManager;
+	private var _soundEffectName:String = "Switch";
+
+	private var _soundType:String = ".ogg";
+
 	public function new()
 	{
 		super();
+
+		// Sound Manager
+		_soundManager = new SoundManager();
+
+		#if !html5
+		_soundManager.load("Switch", Std.string(FileSystem.absolutePath("") + "/Assets/SwitchSoundEffect" + _soundType));
+		_soundManager.load("Xbox", Std.string(FileSystem.absolutePath("") + "/Assets/Xbox Achievement" + _soundType));
+		_soundManager.load("Rewind", Std.string(FileSystem.absolutePath("") + "/Assets/Rewind" + _soundType));
+		_soundManager.load("Denied", Std.string(FileSystem.absolutePath("") + "/Assets/Denied" + _soundType));
+		_soundManager.load("Ba Dum Tss", Std.string(FileSystem.absolutePath("") + "/Assets/Ba Dum Tss" + _soundType));
+		#end
 
 		// Theme system
 		_themeDefault = new Theme();
@@ -92,7 +97,7 @@ class Main extends Sprite
 		_blueTheme = new Theme({"primaryColor":0x0000FF,"secondaryColor":0x0c91f0,"selectedColor":0x4d8014,"primaryTextColor":0x000000,"secondaryTextColor":0xFFFFFF,"highlightColor":0x0c91f0,"shadowColor":0x064471});
 
 		// Set default theme
-		//_themeDefault.apply();
+		_themeDefault.apply();
 
 		// Setup Sections 1
 		var secton1:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
@@ -605,14 +610,57 @@ class Main extends Sprite
 		content.x = 300;
 		content.visible = false;
 
-
 		var leftSoundButton:Button = new Button({"name":"leftSoundBtn","text":"Left","width":100,"height":20,"x":OFFSET,"y":OFFSET});
-		var rightSoundButton:Button = new Button({"name":"rightSoundBtn","text":"Right","width":100,"height":20,"x":leftSoundButton.x + leftSoundButton.width + OFFSET,"y":leftSoundButton.y});
+		var centerSoundButton:Button = new Button({"name":"centerSoundBtn","text":"Center","width":100,"height":20,"x":leftSoundButton.x + leftSoundButton.width + OFFSET,"y":leftSoundButton.y});
+		var rightSoundButton:Button = new Button({"name":"rightSoundBtn","text":"Right","width":100,"height":20,"x":centerSoundButton.x + centerSoundButton.width + OFFSET,"y":centerSoundButton.y});
+
+		leftSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
+		centerSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
+		rightSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
+
+        // List
+		var soundDataArray:Array<Dynamic> = new Array<Dynamic>();
+		soundDataArray.push({"text":"Switch", "value":"Switch"});
+		soundDataArray.push({"text":"Xbox", "value":"Xbox"});
+		soundDataArray.push({"text":"Rewind", "value":"Rewind"});
+		soundDataArray.push({"text":"Denied", "value":"Denied"});
+		soundDataArray.push({"text":"Ba Dum Tss", "value":"Ba Dum Tss"});
 		
+        var list:ListBox = new ListBox({"width":100, "height":100, "x":(rightSoundButton.x + rightSoundButton.width + OFFSET), "y":rightSoundButton.y, "data":soundDataArray});		
+		list.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
+
+
 		content.addChild(leftSoundButton);
+		content.addChild(centerSoundButton);
 		content.addChild(rightSoundButton);
+		content.addChild(list);
 		
 		return content;
+	}
+
+	private function onSoundListChange( event : Event ) : Void {
+
+		var list:ListBox = cast(event.currentTarget, ListBox);
+
+		_soundEffectName = list.getSelected().value;
+
+	}
+
+	private function onSoundPanBtnClick( event : MouseEvent ) : Void {
+
+		var button:Button = cast(event.currentTarget, Button);
+
+		// In order for panning to work the sound must be mono
+		if(button.name == "centerSoundBtn") {
+			_soundManager.playSound(_soundEffectName);
+			_soundManager.setPan(_soundEffectName,0);
+			
+		}
+		else {
+			_soundManager.playSound(_soundEffectName);
+			_soundManager.setPan(_soundEffectName,button.name == "leftSoundBtn" ? -100 : 100);
+		} 
+
 	}
 
 	
