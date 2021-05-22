@@ -76,8 +76,8 @@ class Main extends Sprite
 
 	private var _soundType:String = ".ogg";
 
-	private var _firstSong:String = "";
-	private var _secondSong:String = "";
+	private var _firstSong:String = "All that";
+	private var _secondSong:String = "Funky Element";
 	private var _secondsBeforeFade:Int = 4;
 
 	public function new()
