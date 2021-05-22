@@ -1,6 +1,7 @@
 package;
-
+#if !html5
 import sys.FileSystem;
+#end
 import com.chaos.media.SoundManager;
 import com.chaos.mobile.ui.ToggleSwitch;
 
@@ -75,6 +76,10 @@ class Main extends Sprite
 
 	private var _soundType:String = ".ogg";
 
+	private var _firstSong:String = "";
+	private var _secondSong:String = "";
+	private var _secondsBeforeFade:Int = 4;
+
 	public function new()
 	{
 		super();
@@ -83,11 +88,21 @@ class Main extends Sprite
 		_soundManager = new SoundManager();
 
 		#if !html5
+
+		// Sound Effects
 		_soundManager.load("Switch", Std.string(FileSystem.absolutePath("") + "/Assets/SwitchSoundEffect" + _soundType));
 		_soundManager.load("Xbox", Std.string(FileSystem.absolutePath("") + "/Assets/Xbox Achievement" + _soundType));
 		_soundManager.load("Rewind", Std.string(FileSystem.absolutePath("") + "/Assets/Rewind" + _soundType));
 		_soundManager.load("Denied", Std.string(FileSystem.absolutePath("") + "/Assets/Denied" + _soundType));
 		_soundManager.load("Ba Dum Tss", Std.string(FileSystem.absolutePath("") + "/Assets/Ba Dum Tss" + _soundType));
+
+		// Music
+		// _soundManager.load("All that", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-allthat" + _soundType));
+		// _soundManager.load("Funky Element", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-funkyelement" + _soundType));
+		// _soundManager.load("Groovy Hip-Hop", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-groovyhiphop" + _soundType));
+		// _soundManager.load("Inspire", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-inspire" + _soundType));
+		// _soundManager.load("Straight", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-straight" + _soundType));
+
 		#end
 
 		// Theme system
@@ -617,8 +632,9 @@ class Main extends Sprite
 		leftSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
 		centerSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
 		rightSoundButton.addEventListener(MouseEvent.CLICK, onSoundPanBtnClick, false, 0, true);
+		
 
-        // List
+        // Sound Effect List
 		var soundDataArray:Array<Dynamic> = new Array<Dynamic>();
 		soundDataArray.push({"text":"Switch", "value":"Switch"});
 		soundDataArray.push({"text":"Xbox", "value":"Xbox"});
@@ -626,14 +642,38 @@ class Main extends Sprite
 		soundDataArray.push({"text":"Denied", "value":"Denied"});
 		soundDataArray.push({"text":"Ba Dum Tss", "value":"Ba Dum Tss"});
 		
-        var list:ListBox = new ListBox({"width":100, "height":100, "x":(rightSoundButton.x + rightSoundButton.width + OFFSET), "y":rightSoundButton.y, "data":soundDataArray});		
-		list.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
+        var soundEffectList:ListBox = new ListBox({"width":100, "height":100, "x":(rightSoundButton.x + rightSoundButton.width + OFFSET), "y":rightSoundButton.y, "data":soundDataArray});		
+		soundEffectList.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
 
+		var musicDataArray:Array<Dynamic> = new Array<Dynamic>();
+		musicDataArray.push({"text":"All that", "value":"All that"});
+		musicDataArray.push({"text":"Funky Element", "value":"Funky Element"});
+		musicDataArray.push({"text":"Groovy Hip-Hop", "value":"Groovy Hip-Hop"});
+		musicDataArray.push({"text":"Inspire", "value":"Inspire"});
+		musicDataArray.push({"text":"Straight", "value":"Straight"});
 
+		var multiplier:Int = 8;
+
+		var music1:ListBox = new ListBox({"name":"music1","width":leftSoundButton.width, "height":100, "x":leftSoundButton.x, "y":leftSoundButton.y + leftSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});		
+		var music2:ListBox = new ListBox({"name":"music2","width":rightSoundButton.width, "height":100, "x":rightSoundButton.x, "y":rightSoundButton.y + rightSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});
+
+		music1.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
+		music2.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
+
+		
+		var delayInputBox:TextInput = new TextInput({"defaultString":"Delay", "width":centerSoundButton.width, "height":20, "x":centerSoundButton.x,"y":music1.y});
+
+		var startButton:Button = new Button({"name":"startSoundBtn","text":"Start","width":100,"height":20,"x":delayInputBox.x,"y":delayInputBox.y + delayInputBox.height + OFFSET});
+		
 		content.addChild(leftSoundButton);
 		content.addChild(centerSoundButton);
 		content.addChild(rightSoundButton);
-		content.addChild(list);
+		content.addChild(soundEffectList);
+
+		content.addChild(music1);
+		content.addChild(music2);
+		content.addChild(delayInputBox);
+		content.addChild(startButton);
 		
 		return content;
 	}
@@ -646,6 +686,17 @@ class Main extends Sprite
 
 	}
 
+	private function onMusicListChange( event : Event ) : Void {
+
+		var list:ListBox = cast(event.currentTarget, ListBox);
+
+		if(list.name == "music1")
+			_firstSong = list.getSelected().value;
+
+		if(list.name == "music2")
+			_secondSong = list.getSelected().value;
+	}
+
 	private function onSoundPanBtnClick( event : MouseEvent ) : Void {
 
 		var button:Button = cast(event.currentTarget, Button);
@@ -654,7 +705,6 @@ class Main extends Sprite
 		if(button.name == "centerSoundBtn") {
 			_soundManager.playSound(_soundEffectName);
 			_soundManager.setPan(_soundEffectName,0);
-			
 		}
 		else {
 			_soundManager.playSound(_soundEffectName);
