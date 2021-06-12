@@ -1,4 +1,7 @@
 package;
+import com.chaos.form.ui.InputField;
+import com.chaos.media.event.SoundStatusEvent;
+import motion.Actuate;
 #if !html5
 import sys.FileSystem;
 #end
@@ -76,9 +79,16 @@ class Main extends Sprite
 
 	private var _soundType:String = ".ogg";
 
-	private var _firstSong:String = "All that";
-	private var _secondSong:String = "Funky Element";
+	private var _firstSong:String = "";
+	private var _secondSong:String = "";
+
+	private var _currentPlayingFirstSong:String = "";
+	private var _currentPlayingSecondSong:String = "";
+
 	private var _secondsBeforeFade:Int = 4;
+
+	private var _loadMusic:Bool = false;
+	private var _musicLoadCount:Int = 0;
 
 	public function new()
 	{
@@ -86,6 +96,7 @@ class Main extends Sprite
 
 		// Sound Manager
 		_soundManager = new SoundManager();
+		_soundManager.addEventListener(SoundStatusEvent.SOUND_LOADED ,onSoundLoaded, false, 0, true);
 
 		#if !html5
 
@@ -654,28 +665,52 @@ class Main extends Sprite
 
 		var multiplier:Int = 8;
 
+		
+
 		var music1:ListBox = new ListBox({"name":"music1","width":leftSoundButton.width, "height":100, "x":leftSoundButton.x, "y":leftSoundButton.y + leftSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});		
 		var music2:ListBox = new ListBox({"name":"music2","width":rightSoundButton.width, "height":100, "x":rightSoundButton.x, "y":rightSoundButton.y + rightSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});
 
-		music1.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
-		music2.addEventListener(Event.CHANGE, onSoundListChange, false, 0, true);
-
+		music1.addEventListener(Event.CHANGE, onMusicListChange, false, 0, true);
+		music2.addEventListener(Event.CHANGE, onMusicListChange, false, 0, true);
 		
-		var delayInputBox:TextInput = new TextInput({"defaultString":"Delay", "width":centerSoundButton.width, "height":20, "x":centerSoundButton.x,"y":music1.y});
+		var delayInputBox:TextInput = new TextInput({"name":"delayInput","defaultString":"Delay","border":true,"width":centerSoundButton.width, "height":20, "x":centerSoundButton.x,"y":music1.y});
+		delayInputBox.textField.restrict = "0-9";
+		delayInputBox.textField.maxChars = 1;
 
 		var startButton:Button = new Button({"name":"startSoundBtn","text":"Start","width":100,"height":20,"x":delayInputBox.x,"y":delayInputBox.y + delayInputBox.height + OFFSET});
-		
+		var stopButton:Button = new Button({"name":"stopSoundBtn","text":"Stop","width":100,"height":20,"x":startButton.x,"y":startButton.y + startButton.height + OFFSET});
+
+		startButton.addEventListener(MouseEvent.CLICK, onFadeOverClick, false, 0, true);
+		stopButton.addEventListener(MouseEvent.CLICK, onStopSoundButtonClick, false, 0, true);
+
+		var label:Label = new Label({"name":"fadeMusicLabel", "x":music1.x,"y":music1.y - OFFSET,"width": music1.width + music2.width + startButton.width,"height":stopButton.height,"textColor":0,"text":"Select Music for fade effect."});
+
 		content.addChild(leftSoundButton);
 		content.addChild(centerSoundButton);
 		content.addChild(rightSoundButton);
 		content.addChild(soundEffectList);
+		content.addChild(label);
 
 		content.addChild(music1);
 		content.addChild(music2);
 		content.addChild(delayInputBox);
 		content.addChild(startButton);
+		content.addChild(stopButton);
 		
 		return content;
+	}
+
+	private function onMusicListChange(event : Event) : Void {
+
+		var music:ListBox = cast(event.currentTarget, ListBox);
+		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
+
+		if(music.name == "music1") {
+			label.text = "Selected 1";
+			label.draw();
+		}
+			
+
 	}
 
 	private function onSoundListChange( event : Event ) : Void {
@@ -686,15 +721,85 @@ class Main extends Sprite
 
 	}
 
-	private function onMusicListChange( event : Event ) : Void {
+	private function onFadeOverClick( event : Event ) : Void {
 
-		var list:ListBox = cast(event.currentTarget, ListBox);
+		var music1:ListBox = cast(Utils.getNestedChild(_lastSection,"music1"), ListBox);
+		var music2:ListBox = cast(Utils.getNestedChild(_lastSection,"music2"), ListBox);
 
-		if(list.name == "music1")
-			_firstSong = list.getSelected().value;
+		var delayInputBox:TextInput = cast(Utils.getNestedChild(_lastSection,"delayInput"), TextInput);
 
-		if(list.name == "music2")
-			_secondSong = list.getSelected().value;
+		if( music1.selectIndex() > -1 && !delayInputBox.isEmpty() && music2.selectIndex() > -1) {
+
+			_loadMusic = true;
+			_musicLoadCount = 0;
+
+			// Check to see if sound has been loaded and unload if it is there
+			if(_firstSong != "")
+				_soundManager.removeSound(_firstSong);
+
+			if(_secondSong != "")
+				_soundManager.removeSound(_secondSong);
+
+
+			_firstSong = music1.getSelected().value;
+			_secondSong = music2.getSelected().value;
+
+			// Load in new sound effect
+			loadMusic(music1.getSelected().value);
+			loadMusic(music2.getSelected().value);
+		}
+
+
+	}
+
+	private function loadMusic( song:String ) : Void {
+
+		switch(song) {
+
+			case "All that":
+				_soundManager.load("All that", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-allthat" + _soundType));
+
+			case "Funky Element":
+				_soundManager.load("Funky Element", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-funkyelement" + _soundType));
+
+			case "Groovy Hip-Hop":
+				_soundManager.load("Groovy Hip-Hop", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-groovyhiphop" + _soundType));
+
+			case "Inspire":
+				_soundManager.load("Inspire", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-inspire" + _soundType));
+
+			case "Straight":
+				_soundManager.load("Straight", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-straight" + _soundType));
+
+
+		}
+
+	}
+
+	private function onSoundLoaded( event:SoundStatusEvent ) : Void {
+
+		if(_loadMusic) {
+			
+			_musicLoadCount++;
+
+			if(_musicLoadCount == 2) {
+
+				var delayInputBox:TextInput =  cast(Utils.getNestedChild(_lastSection,"delayInput"), TextInput);
+				_soundManager.playSound(_firstSong);
+
+				Actuate.timer(Std.parseInt(delayInputBox.text)).onComplete(startFadeEffect);
+			}
+		}
+			
+	}
+
+	private function onStopSoundButtonClick( event:MouseEvent ) : Void {
+		_soundManager.stopSound(_firstSong);
+		_soundManager.stopSound(_secondSong);
+	}
+
+	private function startFadeEffect() : Void {
+		_soundManager.crossFade(_firstSong,_secondSong,100);
 	}
 
 	private function onSoundPanBtnClick( event : MouseEvent ) : Void {
