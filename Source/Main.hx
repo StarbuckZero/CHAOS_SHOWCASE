@@ -135,7 +135,7 @@ class Main extends Sprite
 
 		// Setup Section 2
 		var secton2:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
-		var soundComponentButton:Button = new Button({"name":"sound","text":"Left and Right Speak","width":300,"height":20});
+		var soundComponentButton:Button = new Button({"name":"sound","text":"Sound Test","width":300,"height":20});
 		
 		secton2.addChild(soundComponentButton);
 
@@ -665,8 +665,6 @@ class Main extends Sprite
 
 		var multiplier:Int = 8;
 
-		
-
 		var music1:ListBox = new ListBox({"name":"music1","width":leftSoundButton.width, "height":100, "x":leftSoundButton.x, "y":leftSoundButton.y + leftSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});		
 		var music2:ListBox = new ListBox({"name":"music2","width":rightSoundButton.width, "height":100, "x":rightSoundButton.x, "y":rightSoundButton.y + rightSoundButton.height + (OFFSET * multiplier), "data":musicDataArray});
 
@@ -683,8 +681,8 @@ class Main extends Sprite
 		startButton.addEventListener(MouseEvent.CLICK, onFadeOverClick, false, 0, true);
 		stopButton.addEventListener(MouseEvent.CLICK, onStopSoundButtonClick, false, 0, true);
 
-		var label:Label = new Label({"name":"fadeMusicLabel", "x":music1.x,"y":music1.y - OFFSET,"width": music1.width + music2.width + startButton.width,"height":stopButton.height,"textColor":0,"text":"Select Music for fade effect."});
-
+		var label:Label = new Label({"name":"fadeMusicLabel", 
+"x":music1.x,"y":music1.y - OFFSET,"width": music1.width + music2.width + startButton.width,"height":stopButton.height,"textColor":0,"text":"Select Music and delay amount for fade effect."});
 		content.addChild(leftSoundButton);
 		content.addChild(centerSoundButton);
 		content.addChild(rightSoundButton);
@@ -702,13 +700,17 @@ class Main extends Sprite
 
 	private function onMusicListChange(event : Event) : Void {
 
-		var music:ListBox = cast(event.currentTarget, ListBox);
 		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
+		var music1:ListBox = cast(Utils.getNestedChild(_lastSection,"music1"), ListBox);
+		var music2:ListBox = cast(Utils.getNestedChild(_lastSection,"music2"), ListBox);
 
-		if(music.name == "music1") {
-			label.text = "Selected 1";
+		var delayInputBox:TextInput = cast(Utils.getNestedChild(_lastSection,"delayInput"), TextInput);
+
+		if(music1.selectIndex() != -1 && music2.selectIndex() != -1 && !delayInputBox.isEmpty()) {
+			label.text = "Select the play button to start music";
 			label.draw();
 		}
+
 			
 
 	}
@@ -716,13 +718,12 @@ class Main extends Sprite
 	private function onSoundListChange( event : Event ) : Void {
 
 		var list:ListBox = cast(event.currentTarget, ListBox);
-
 		_soundEffectName = list.getSelected().value;
-
 	}
 
 	private function onFadeOverClick( event : Event ) : Void {
 
+		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
 		var music1:ListBox = cast(Utils.getNestedChild(_lastSection,"music1"), ListBox);
 		var music2:ListBox = cast(Utils.getNestedChild(_lastSection,"music2"), ListBox);
 
@@ -732,6 +733,9 @@ class Main extends Sprite
 
 			_loadMusic = true;
 			_musicLoadCount = 0;
+
+			label.text = "Playing first track";
+			label.draw();
 
 			// Check to see if sound has been loaded and unload if it is there
 			if(_firstSong != "")
@@ -794,12 +798,30 @@ class Main extends Sprite
 	}
 
 	private function onStopSoundButtonClick( event:MouseEvent ) : Void {
+
+		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
+		label.text = "Select Music and delay amount for fade effect.";
+		label.draw();
+
 		_soundManager.stopSound(_firstSong);
 		_soundManager.stopSound(_secondSong);
 	}
 
 	private function startFadeEffect() : Void {
-		_soundManager.crossFade(_firstSong,_secondSong,100);
+
+		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
+		label.text = "Started Cross Fade";
+		label.draw();
+
+		_soundManager.crossFade(_firstSong, _secondSong, 100, onFadeComplete);
+	}
+
+	private function onFadeComplete(value : Dynamic) : Void {
+
+		var label:Label = cast(Utils.getNestedChild(_lastSection,"fadeMusicLabel"), Label);
+		label.text = "Cross Fade done, you can press the stop button.";
+		label.draw();
+
 	}
 
 	private function onSoundPanBtnClick( event : MouseEvent ) : Void {
