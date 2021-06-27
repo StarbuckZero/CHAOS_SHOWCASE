@@ -1,4 +1,6 @@
 package;
+import openfl.events.KeyboardEvent;
+import com.chaos.drawing.TileLayer;
 import com.chaos.form.ui.InputField;
 import com.chaos.media.event.SoundStatusEvent;
 import motion.Actuate;
@@ -54,6 +56,7 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextField;
+import openfl.ui.Keyboard;
 
 class Main extends Sprite
 {
@@ -64,6 +67,7 @@ class Main extends Sprite
 	private var _uiDemoSection:Sprite;
 	private var _mobileUIDemo:Sprite;
 	private var _soundDemo:Sprite;
+	private var _drawingDemo:Sprite;
 
 	private var _lastSection:Sprite;
 
@@ -107,13 +111,6 @@ class Main extends Sprite
 		_soundManager.load("Denied", Std.string(FileSystem.absolutePath("") + "/Assets/Denied" + _soundType));
 		_soundManager.load("Ba Dum Tss", Std.string(FileSystem.absolutePath("") + "/Assets/Ba Dum Tss" + _soundType));
 
-		// Music
-		// _soundManager.load("All that", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-allthat" + _soundType));
-		// _soundManager.load("Funky Element", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-funkyelement" + _soundType));
-		// _soundManager.load("Groovy Hip-Hop", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-groovyhiphop" + _soundType));
-		// _soundManager.load("Inspire", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-inspire" + _soundType));
-		// _soundManager.load("Straight", Std.string(FileSystem.absolutePath("") + "/Assets/bensound-straight" + _soundType));
-
 		#end
 
 		// Theme system
@@ -139,26 +136,30 @@ class Main extends Sprite
 		
 		secton2.addChild(soundComponentButton);
 
-		var accordionLabel2:Label = new Label({"text":"Section 2","width":100,"height":20});
-		var accordionLabel3:Label = new Label({"text":"Section 3","width":100,"height":20});
+		var secton3:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
+		var tileComponentButton:Button = new Button({"name":"tile","text":"Tile Demo","width":300,"height":20});
 
-        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":secton2},{"name":"Section3","text":"Drawing and Animation","content":accordionLabel3}];
+		secton3.addElement(tileComponentButton);
+
+        var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":secton2},{"name":"Section3","text":"Drawing and Animation","content":secton3}];
         
-        accordion  = new Accordion({"width":300,"height":stage.stageHeight,"data":sectionArray,"x":0, "y":0});
+        accordion = new Accordion({"width":300,"height":stage.stageHeight,"data":sectionArray,"x":0, "y":0});
 
 		uiComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		mobileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		soundComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		tileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 
-		_uiDemoSection = creeateUIDemo();
+		_uiDemoSection = createUIDemo();
 		_mobileUIDemo = createMoblieDemo();
 		_soundDemo = createSoundDemo();
+		_drawingDemo = createSpriteSheetDemo();
 		
 		addChild(accordion);
 		addChild(_uiDemoSection);
 		addChild(_mobileUIDemo);
 		addChild(_soundDemo);
-
+		addChild(_drawingDemo);
 
 	}
 
@@ -179,7 +180,10 @@ class Main extends Sprite
 				_lastSection = _mobileUIDemo;
 			case "sound":
 				_soundDemo.visible = true;
-				_lastSection = _soundDemo;				
+				_lastSection = _soundDemo;		
+			case "tile":
+				_drawingDemo.visible = true;
+				_lastSection = _drawingDemo;
 		}
 		
 	}
@@ -188,10 +192,8 @@ class Main extends Sprite
 	// Desktop UI  //
 	////////////////
 
-	private function creeateUIDemo():Sprite {
+	private function createUIDemo():Sprite {
 
-		
-    
 		var GANGSTA_TEXT : String = "Lorem fizzle dolizzle own yo' amizzle, consectetuer adipiscing gangster. Nullizzle sapizzle fo shizzle, uhuh ... yih! shut the shizzle up, suscipizzle quis, you son of a bizzle vel, arcu. Pellentesque for sure its fo rizzle. Sizzle erizzle. Dang izzle dolizzle dapibus the bizzle tempus shizznit. Maurizzle pellentesque nibh et turpis. Pimpin' in i saw beyonces tizzles and my pizzle went crizzle. Pellentesque eleifend rhoncizzle nisi. In yippiyo break yo neck, yall platea dictumst. The bizzle dapibizzle. Curabitur daahng dawg shut the shizzle up, pretizzle own yo', mattizzle ac, eleifend check it out, nunc. Rizzle suscipizzle. Integer gangsta black purus.\n\nCurabitizzle doggy i'm in the shizzle for sure nisi that's the shizzle mollizzle. Suspendisse potenti. Morbi da bomb. Vivamizzle neque. Crizzle orci. Cras pimpin' brizzle, interdizzle uhuh ... yih!, phat sit amet, stuff izzle, shizzlin dizzle. Pellentesque things. That's the shizzle daahng dawg mi, volutpizzle in, sagittis sizzle, funky fresh semper, i saw beyonces tizzles and my pizzle went crizzle. Bizzle its fo rizzle ipsum. Break it down volutpizzle felis vel uhuh ... yih!. Crizzle ma nizzle justo hizzle purus sodales ornare. Shiz venenatizzle check it out et funky fresh. Nunc sizzle. Suspendisse dizzle placerizzle mah nizzle. Curabitur yippiyo dang. Nunc shizzlin dizzle, leo eu dapibus hendrerizzle, ipsum get down get down fo shizzle sem, in aliquet magna pimpin' luctizzle pede. Fo shizzle a nisl. Class aptent cool dizzle pot ass boom shackalack conubia nostra, pizzle inceptos hymenaeos. Aliquam interdizzle, neque nizzle break yo neck, yall fo, phat orci its fo rizzle leo, shit semper things i saw beyonces tizzles and my pizzle went crizzle dizzle sizzle.";
 		
 		var button : Button;
@@ -681,8 +683,9 @@ class Main extends Sprite
 		startButton.addEventListener(MouseEvent.CLICK, onFadeOverClick, false, 0, true);
 		stopButton.addEventListener(MouseEvent.CLICK, onStopSoundButtonClick, false, 0, true);
 
-		var label:Label = new Label({"name":"fadeMusicLabel", 
-"x":music1.x,"y":music1.y - OFFSET,"width": music1.width + music2.width + startButton.width,"height":stopButton.height,"textColor":0,"text":"Select Music and delay amount for fade effect."});
+		var label:Label = new Label({"name":"fadeMusicLabel","x":music1.x,"y":music1.y - OFFSET,"width": music1.width + music2.width + startButton.width,"height":stopButton.height,
+		"textColor":0,"text":"Select Music and delay amount for fade effect."});
+
 		content.addChild(leftSoundButton);
 		content.addChild(centerSoundButton);
 		content.addChild(rightSoundButton);
@@ -707,11 +710,9 @@ class Main extends Sprite
 		var delayInputBox:TextInput = cast(Utils.getNestedChild(_lastSection,"delayInput"), TextInput);
 
 		if(music1.selectIndex() != -1 && music2.selectIndex() != -1 && !delayInputBox.isEmpty()) {
-			label.text = "Select the play button to start music";
+			label.text = "Select the Start button to play music";
 			label.draw();
 		}
-
-			
 
 	}
 
@@ -840,6 +841,68 @@ class Main extends Sprite
 
 	}
 
+	//////////////////
+	//  Graphics   //
+	////////////////	
+	
+	
+	private function createSpriteSheetDemo():Sprite {
+
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+		var leftButton:Button = new Button({"name":"left","text":"Left","width":100,"height":20});
+		var rightButton:Button = new Button({"name":"right","text":"Right","width":100,"height":20});
+		var topButton:Button = new Button({"name":"top","text":"Top","width":100,"height":20});
+		var bottomButton:Button = new Button({"name":"bottom","text":"Bottom","width":100,"height":20});
+
+		var tileLayer:TileLayer = new TileLayer({"name":"tileLayer","cacheTiles":true,"assetPrefix":"assets/","tileFile":"assets/Dungeon Top Down.json","tileMap":"assets/TileMap.json","x":leftButton.width + (OFFSET * 2),"y":topButton.height + OFFSET ,"width":400,"height":400});
+		content.addChild(tileLayer);
+
+		leftButton.x = OFFSET;
+		leftButton.y = (tileLayer.height / 2) + (leftButton.height / 2);
+
+		rightButton.x = tileLayer.x + tileLayer.width + rightButton.width + OFFSET;
+		rightButton.y = leftButton.y;
+
+		topButton.x = tileLayer.x + (tileLayer.width / 2);
+
+		bottomButton.x = topButton.x;
+		bottomButton.y = tileLayer.y + tileLayer.height + bottomButton.height + OFFSET;
+
+		
+
+		content.addChild(leftButton);
+		content.addChild(rightButton);
+		content.addChild(topButton);
+		content.addChild(bottomButton);
+
+		//TODO: Use buttons and not this
+		//stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown,false,0,true);
+
+		return content;
+
+	}
+
+	private function onKeyDown(event:KeyboardEvent) { 
+
+		var tileLayer:TileLayer = cast(Utils.getNestedChild(_lastSection,"tileLayer"), TileLayer);
+
+		switch(event.keyCode)
+		{
+			case Keyboard.RIGHT: 
+				tileLayer.right();
+			case Keyboard.LEFT:
+				tileLayer.left();
+			case Keyboard.DOWN:
+				tileLayer.down();
+			case Keyboard.UP:
+				tileLayer.up();
+		}
+
+		
+	}
 	
 
 }
