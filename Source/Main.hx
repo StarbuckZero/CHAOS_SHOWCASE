@@ -1,4 +1,5 @@
 package;
+import com.chaos.drawing.Canvas;
 import openfl.events.KeyboardEvent;
 import com.chaos.drawing.TileLayer;
 import com.chaos.form.ui.InputField;
@@ -68,6 +69,7 @@ class Main extends Sprite
 	private var _mobileUIDemo:Sprite;
 	private var _soundDemo:Sprite;
 	private var _drawingDemo:Sprite;
+	private var _canvasDemo:Sprite;
 
 	private var _lastSection:Sprite;
 
@@ -138,8 +140,11 @@ class Main extends Sprite
 
 		var secton3:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
 		var tileComponentButton:Button = new Button({"name":"tile","text":"Tile Demo","width":300,"height":20});
+		var canvasComponentButton:Button = new Button({"name":"canvus","text":"Canvas Demo","width":300,"height":20,"y":tileComponentButton.y + tileComponentButton.height});
 
 		secton3.addElement(tileComponentButton);
+		secton3.addElement(canvasComponentButton);
+		
 
         var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":secton2},{"name":"Section3","text":"Drawing and Animation","content":secton3}];
         
@@ -149,17 +154,20 @@ class Main extends Sprite
 		mobileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		soundComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		tileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		canvasComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 
 		_uiDemoSection = createUIDemo();
 		_mobileUIDemo = createMoblieDemo();
 		_soundDemo = createSoundDemo();
 		_drawingDemo = createSpriteSheetDemo();
+		_canvasDemo = createCanvasDemo();
 		
 		addChild(accordion);
 		addChild(_uiDemoSection);
 		addChild(_mobileUIDemo);
 		addChild(_soundDemo);
 		addChild(_drawingDemo);
+		addChild(_canvasDemo);
 
 	}
 
@@ -184,6 +192,9 @@ class Main extends Sprite
 			case "tile":
 				_drawingDemo.visible = true;
 				_lastSection = _drawingDemo;
+			case "canvus":
+				_canvasDemo.visible = true;
+				_lastSection = _canvasDemo;				
 		}
 		
 	}
@@ -206,6 +217,7 @@ class Main extends Sprite
 		var progressBar : ProgressBar;
 		var progressSlider : ProgressSlider;
 		var toggleButton : ToggleButton;
+
 		var checkBoxGroup : CheckBoxGroup;
 		var radioButtonGroup : RadioButtonGroup;
 		var label : Label;
@@ -842,7 +854,7 @@ class Main extends Sprite
 	}
 
 	//////////////////
-	//  Graphics   //
+	//  Tile Demo  //
 	////////////////	
 	
 	
@@ -857,51 +869,78 @@ class Main extends Sprite
 		var topButton:Button = new Button({"name":"top","text":"Top","width":100,"height":20});
 		var bottomButton:Button = new Button({"name":"bottom","text":"Bottom","width":100,"height":20});
 
-		var tileLayer:TileLayer = new TileLayer({"name":"tileLayer","cacheTiles":true,"assetPrefix":"assets/","tileFile":"assets/Dungeon Top Down.json","tileMap":"assets/TileMap.json","x":leftButton.width + (OFFSET * 2),"y":topButton.height + OFFSET ,"width":400,"height":400});
+		var tileLayer:TileLayer = new TileLayer({"name":"tileLayer","useMask":true,"cacheTiles":true,"assetPrefix":"assets/","tileFile":"assets/Dungeon Top Down.json","tileMap":"assets/TileMap.json","x":leftButton.width + (OFFSET * 2),"y":topButton.height + OFFSET ,"width":400,"height":400});
 		content.addChild(tileLayer);
 
 		leftButton.x = OFFSET;
 		leftButton.y = (tileLayer.height / 2) + (leftButton.height / 2);
 
-		rightButton.x = tileLayer.x + tileLayer.width + rightButton.width + OFFSET;
+		rightButton.x = tileLayer.x + tileLayer.width + OFFSET;
 		rightButton.y = leftButton.y;
 
-		topButton.x = tileLayer.x + (tileLayer.width / 2);
+		topButton.x = tileLayer.x + (tileLayer.width / 2) - (topButton.width / 2);
 
 		bottomButton.x = topButton.x;
-		bottomButton.y = tileLayer.y + tileLayer.height + bottomButton.height + OFFSET;
+		bottomButton.y = tileLayer.y + tileLayer.height + OFFSET;
 
-		
+		leftButton.addEventListener(MouseEvent.CLICK,onTileButtonClick,false,0,true);
+		rightButton.addEventListener(MouseEvent.CLICK,onTileButtonClick,false,0,true);
+		topButton.addEventListener(MouseEvent.CLICK,onTileButtonClick,false,0,true);
+		bottomButton.addEventListener(MouseEvent.CLICK,onTileButtonClick,false,0,true);
 
 		content.addChild(leftButton);
 		content.addChild(rightButton);
 		content.addChild(topButton);
 		content.addChild(bottomButton);
 
-		//TODO: Use buttons and not this
-		//stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown,false,0,true);
-
 		return content;
 
 	}
 
-	private function onKeyDown(event:KeyboardEvent) { 
+	private function onTileButtonClick(event:MouseEvent) { 
 
 		var tileLayer:TileLayer = cast(Utils.getNestedChild(_lastSection,"tileLayer"), TileLayer);
+		var button:Button = cast(event.currentTarget, Button);
 
-		switch(event.keyCode)
+		switch(button.name)
 		{
-			case Keyboard.RIGHT: 
+			case "right": 
 				tileLayer.right();
-			case Keyboard.LEFT:
+			case "left":
 				tileLayer.left();
-			case Keyboard.DOWN:
+			case "bottom":
 				tileLayer.down();
-			case Keyboard.UP:
+			case "top":
 				tileLayer.up();
 		}
+	}
 
+	//////////////////
+	// Canvas Demo //
+	////////////////	
+
+	private function createCanvasDemo():Sprite {
 		
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;	
+
+		var canvasShapeData:Array<Dynamic> = new Array<Dynamic>();
+
+		canvasShapeData.push({"Layer":{"name":"base"}});
+		canvasShapeData.push({"Square":{"name":"square1","layerName":"base","width":100,"height":100,"x":100,"y":100,"color":0xFF0000}});
+		canvasShapeData.push({"Line":{"name":"line1","layerName":"base","startX":0,"startY":0,"endX":400,"endY":400,"thinkness":1,"color":0xFF0000}});
+		canvasShapeData.push({"Circle":{"name":"circle","layerName":"base","radius":10,"x":200,"y":300,"thinkness":1,"color":0x000000}});
+		canvasShapeData.push({"HelixOutline":{"name":"helix","layerName":"base","styleMarker":0,"radius":50,"x":200,"y":300,"objectX":0,"objectY":2,"thinkness":1,"color":0x0000FF}});
+		canvasShapeData.push({"Hexagon":{"name":"hexagon1","layerName":"base","radius":100,"x":400,"y":200,"objectX":0,"objectY":0,"thinkness":1,"color":0xFFFF00}});
+
+
+
+		var canvas:Canvas = new Canvas({"data":canvasShapeData});
+
+		content.addChild(canvas);
+
+		return content;
 	}
 	
 
