@@ -1,4 +1,8 @@
 package;
+import com.chaos.form.FormBuilder;
+import com.chaos.media.DisplayVideo;
+import openfl.utils.Assets;
+import com.chaos.media.DisplayImage;
 import com.chaos.drawing.Canvas;
 import openfl.events.KeyboardEvent;
 import com.chaos.drawing.TileLayer;
@@ -67,9 +71,12 @@ class Main extends Sprite
 
 	private var _uiDemoSection:Sprite;
 	private var _mobileUIDemo:Sprite;
+	private var _formUIDemo:Sprite;
 	private var _soundDemo:Sprite;
 	private var _drawingDemo:Sprite;
 	private var _canvasDemo:Sprite;
+	private var _imageDemo:Sprite;
+	private var _videoDemo:Sprite;
 
 	private var _lastSection:Sprite;
 
@@ -128,9 +135,11 @@ class Main extends Sprite
 		var secton1:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
 		var uiComponentButton:Button = new Button({"name":"ui","text":"UI Components","width":300,"height":20});
 		var mobileComponentButton:Button = new Button({"name":"mobile","text":"Mobile Components","width":300,"height":20,"y":uiComponentButton.y + uiComponentButton.height});
+		var formComponentButton:Button = new Button({"name":"form","text":"Form Components","width":300,"height":20,"y":mobileComponentButton.y + mobileComponentButton.height});
 
 		secton1.addElement(uiComponentButton);
 		secton1.addElement(mobileComponentButton);
+		secton1.addElement(formComponentButton);
 
 		// Setup Section 2
 		var secton2:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
@@ -141,9 +150,13 @@ class Main extends Sprite
 		var secton3:BaseContainer = new BaseContainer({"width":300,"height":stage.stageHeight});
 		var tileComponentButton:Button = new Button({"name":"tile","text":"Tile Demo","width":300,"height":20});
 		var canvasComponentButton:Button = new Button({"name":"canvus","text":"Canvas Demo","width":300,"height":20,"y":tileComponentButton.y + tileComponentButton.height});
+		var imageComponentButton:Button = new Button({"name":"image","text":"Display Image Demo","width":300,"height":20,"y":canvasComponentButton.y + canvasComponentButton.height});
+		var videoComponentButton:Button = new Button({"name":"video","text":"Display Video Demo","width":300,"height":20,"y":imageComponentButton.y + imageComponentButton.height});
 
 		secton3.addElement(tileComponentButton);
 		secton3.addElement(canvasComponentButton);
+		secton3.addElement(imageComponentButton);
+		//secton3.addElement(videoComponentButton);
 		
 
         var sectionArray:Array<Dynamic> = [{"name":"Section1","text":"UI","content":secton1},{"name":"Section2","text":"Sound Manager","content":secton2},{"name":"Section3","text":"Drawing and Animation","content":secton3}];
@@ -155,19 +168,29 @@ class Main extends Sprite
 		soundComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		tileComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 		canvasComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		imageComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		formComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
+		//videoComponentButton.addEventListener(MouseEvent.CLICK, onUIComponentClick, false, 0, true);
 
 		_uiDemoSection = createUIDemo();
 		_mobileUIDemo = createMoblieDemo();
 		_soundDemo = createSoundDemo();
 		_drawingDemo = createSpriteSheetDemo();
 		_canvasDemo = createCanvasDemo();
-		
+		_imageDemo = createImageDemo();
+		//_videoDemo = createVideoDemo();
+		_formUIDemo = createFormDemo();
+
+
 		addChild(accordion);
 		addChild(_uiDemoSection);
 		addChild(_mobileUIDemo);
 		addChild(_soundDemo);
 		addChild(_drawingDemo);
 		addChild(_canvasDemo);
+		addChild(_imageDemo);
+		addChild(_formUIDemo);
+		//addChild(_videoDemo);
 
 	}
 
@@ -194,7 +217,17 @@ class Main extends Sprite
 				_lastSection = _drawingDemo;
 			case "canvus":
 				_canvasDemo.visible = true;
-				_lastSection = _canvasDemo;				
+				_lastSection = _canvasDemo;
+			case "image":
+				_imageDemo.visible = true;
+				_lastSection = _imageDemo;
+			case "video":
+				_videoDemo.visible = true;
+				_lastSection = _videoDemo;
+			case "form":
+				_formUIDemo.visible = true;
+				_lastSection = _formUIDemo;
+	
 		}
 		
 	}
@@ -514,7 +547,7 @@ class Main extends Sprite
 
 
 	//////////////////
-	// Moblie UI    //
+	// Moblie UI   //
 	////////////////	
 
 	private function createMoblieDemo() : Sprite {
@@ -638,6 +671,25 @@ class Main extends Sprite
 		button.enabled = (_levelNum <= 5);
 		button.draw();
 
+	}
+
+	//////////////////
+	// Form UI     //
+	////////////////	
+
+	private function createFormDemo() : Sprite {
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+		var form:FormBuilder = new FormBuilder({"width":400,"height":400,"x":100,"y":100});
+
+		form.addFormElement("FirstName","firstName",new InputField());
+		form.draw();
+		
+		content.addChild(form);
+
+		return content;
 	}
 
 	//////////////////
@@ -933,6 +985,7 @@ class Main extends Sprite
 		canvasShapeData.push({"Circle":{"name":"circle","layerName":"base","radius":10,"x":200,"y":300,"thinkness":1,"color":0x000000}});
 		canvasShapeData.push({"HelixOutline":{"name":"helix","layerName":"base","styleMarker":0,"radius":50,"x":200,"y":300,"objectX":0,"objectY":2,"thinkness":1,"color":0x0000FF}});
 		canvasShapeData.push({"Hexagon":{"name":"hexagon1","layerName":"base","radius":100,"x":400,"y":200,"objectX":0,"objectY":0,"thinkness":1,"color":0xFFFF00}});
+		canvasShapeData.push({"RoundSquare":{"name":"square2","layerName":"base","roundEdge":20,"width":400,"height":100,"x":100,"y":500,"color":0xFF0000}});
 
 
 
@@ -942,6 +995,66 @@ class Main extends Sprite
 
 		return content;
 	}
+
+	//////////////////
+	// Image Demo  //
+	////////////////
 	
+	private function createImageDemo():Sprite {
+
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+		var gold:DisplayImage = new DisplayImage({"name":"gold","image":Assets.getBitmapData("assets/gold.jpg"),"width":400,"height":400});
+		var black:DisplayImage = new DisplayImage({"name":"black","image":Assets.getBitmapData("assets/black.jpg"),"x":gold.width});
+		var green:DisplayImage = new DisplayImage({"name":"green","image":Assets.getBitmapData("assets/green.jpg"),"y":gold.height});
+		var purple:DisplayImage = new DisplayImage({"name":"purple","image":Assets.getBitmapData("assets/purple.jpg"),"x":black.x,"y":gold.height});
+
+		content.addChild(gold);
+		content.addChild(black);
+		content.addChild(green);
+		content.addChild(purple);
+
+		return content;
+	 }
+
+	//////////////////
+	// Video Demo  //
+	////////////////	 
+	
+	private function createVideoDemo():Sprite {
+
+		var content:Sprite = new Sprite();
+		content.x = 300;
+		content.visible = false;
+
+		var video:DisplayVideo = new DisplayVideo({"name":"video","width":800,"height":600});
+		
+		#if !html5
+
+		video.load(FileSystem.absolutePath("") + "/Assets/The Legend of Zelda Skyward Sword HD – Your Destiny Awaits – Nintendo Switch.mp4", false);
+
+		#end
+
+		var playButton:Button = new Button({"text":"Icon", "width":100, "height":20, "showLabel":false, "x":video.width, "y": (video.y + video.height + 20)});
+        playButton.setIcon(CompositeManager.displayObjectToBitmap(new ArrowRightIcon({"width":10, "height":10, "baseColor":0xFFFFFF})));
+        playButton.draw();
+
+		playButton.addEventListener(MouseEvent.CLICK,onVideoPlayButtonClick,false,0,true);
+
+		content.addChild(playButton);
+		content.addChild(video);
+		
+
+		return content;
+	}
+
+	private function onVideoPlayButtonClick(event:MouseEvent) : Void {
+
+		var video:DisplayVideo = cast(Utils.getNestedChild(_lastSection,"video"), DisplayVideo);
+		video.play();
+
+	}
 
 }
