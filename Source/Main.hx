@@ -684,7 +684,7 @@ class Main extends Sprite
 
 		var form:FormBuilder = new FormBuilder({"width":400,"height":400,"x":100,"y":100});
 
-		form.addFormElement("FirstName","firstName",new InputField());
+		form.addFormElement("FirstName","firstName",InputField);
 		form.draw();
 		
 		content.addChild(form);
