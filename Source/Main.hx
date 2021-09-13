@@ -103,6 +103,14 @@ class Main extends Sprite
 	private var _loadMusic:Bool = false;
 	private var _musicLoadCount:Int = 0;
 
+	private var _carouselButton1:MobileButton;
+	private var _carouselButton2:MobileButton;
+	private var _carouselButton3:MobileButton;
+
+	private var _carouselButton1Color:Int = 0xFF0000;
+	private var _carouselButton2Color:Int = 0x00FF00;
+	private var _carouselButton3Color:Int = 0x0000FF;
+
 	public function new()
 	{
 		super();
@@ -431,8 +439,6 @@ class Main extends Sprite
 		itemData.push({"text":"Item 3", "value":"3"});
 		itemData.push({"text":"Item 4", "value":"4"});
 		itemData.push({"text":"Item 5", "value":"5"});
-        
-		
 		
         itemPane = new ItemPane({"width":300, "height":200, "itemWidth":150, "mode":ScrollPolicy.ONLY_VERTICAL, "itemHeight":100 , "x": (scrollPane.x + scrollPane.width + OFFSET), "y":scrollPane.y, "data":itemData});
 		
@@ -522,6 +528,15 @@ class Main extends Sprite
 			case "blue":
 				_blueTheme.apply();							
 		}
+
+		// Set carousel button colors back to default
+		_carouselButton1.defaultColor = _carouselButton1Color;
+		_carouselButton2.defaultColor = _carouselButton2Color;
+		_carouselButton3.defaultColor = _carouselButton3Color;
+
+		_carouselButton1.draw();
+		_carouselButton2.draw();
+		_carouselButton3.draw();
 	}
 
 	private function onHideWindow(event : WindowEvent) : Void
@@ -568,13 +583,13 @@ class Main extends Sprite
 		var card:Card = new Card({"name":"card","roundEdge":4,"width":100,"height":100,"x": breadcrumb.x + OFFSET, "y": breadcrumb.y + breadcrumb.height + OFFSET,"content":cardLabel});
 
 		var carouselData:Array<Dynamic> = new Array<Dynamic>();
-		var button1:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0xFF0000});
-		var button2:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0x00FF00});
-		var button3:MobileButton = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":0x0000FF});
+		_carouselButton1 = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":_carouselButton1Color});
+		_carouselButton2 = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":_carouselButton2Color});
+		_carouselButton3 = new MobileButton({"name":"mobileBtn1","width":400,"height":200,"defaultColor":_carouselButton3Color});
 
-		carouselData.push({"name":"1","content":button1});
-		carouselData.push({"name":"2","content":button2});
-		carouselData.push({"name":"3","content":button3});
+		carouselData.push({"name":"1","content":_carouselButton1});
+		carouselData.push({"name":"2","content":_carouselButton2});
+		carouselData.push({"name":"3","content":_carouselButton3});
 
 		var carousel:Carousel = new Carousel({"name":"carousel","width":400,"height":200,"x":card.x + card.width + OFFSET,"y":card.y,"data":carouselData});
 
@@ -682,9 +697,13 @@ class Main extends Sprite
 		content.x = 300;
 		content.visible = false;
 
-		var form:FormBuilder = new FormBuilder({"width":400,"height":400,"x":100,"y":100});
-
-		form.addFormElement("FirstName","firstName",InputField);
+		var form:FormBuilder = new FormBuilder({"width":400,"height":140,"x":100,"y":100});
+		
+		form.addFormElement("First Name","firstName",InputField);
+		form.addFormElement("Last Name","lastName",InputField);
+		form.addFormElement("Age","age",InputField);
+		form.addFormElement("Sex","sex",InputField);
+		
 		form.draw();
 		
 		content.addChild(form);
