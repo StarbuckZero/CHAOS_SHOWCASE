@@ -1,10 +1,10 @@
 package;
+import com.chaos.form.ui.DropDownMenu;
 import com.chaos.form.FormBuilder;
 import com.chaos.media.DisplayVideo;
 import openfl.utils.Assets;
 import com.chaos.media.DisplayImage;
 import com.chaos.drawing.Canvas;
-import openfl.events.KeyboardEvent;
 import com.chaos.drawing.TileLayer;
 import com.chaos.form.ui.InputField;
 import com.chaos.media.event.SoundStatusEvent;
@@ -54,6 +54,8 @@ import com.chaos.ui.Window;
 import com.chaos.mobile.ui.Card;
 import com.chaos.utils.ThreadManager;
 import com.chaos.ui.ScrollPolicy;
+import com.chaos.form.ui.NumberField;
+import com.chaos.ui.GridPane;
 
 import openfl.display.MovieClip;
 import openfl.display.Shape;
@@ -61,7 +63,6 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.events.MouseEvent;
 import openfl.text.TextField;
-import openfl.ui.Keyboard;
 
 class Main extends Sprite
 {
@@ -699,14 +700,23 @@ class Main extends Sprite
 
 		var form:FormBuilder = new FormBuilder({"width":400,"height":140,"x":100,"y":100});
 		
+		// Only setting the drop down
+		var comboData:Array<Dynamic> = new Array<Dynamic>();
+		comboData.push({"text":"Male", "value":"M"});
+		comboData.push({"text":"Female", "value":"F"});
+
 		form.addFormElement("First Name","firstName",InputField);
 		form.addFormElement("Last Name","lastName",InputField);
-		form.addFormElement("Age","age",InputField);
-		form.addFormElement("Sex","sex",InputField);
+		form.addFormElement("Age","age",NumberField);
+		form.addFormElement("Sex","sex",DropDownMenu, {"data":comboData});
 		
 		form.draw();
+
+		var gridPane:GridPane = new GridPane({"width":400,"height":140,"x":100,"y":form.y + form.height + 10});
 		
+		content.addChild(gridPane);
 		content.addChild(form);
+		
 
 		return content;
 	}
