@@ -1,4 +1,6 @@
 package;
+import com.chaos.ui.layout.GridCellLayout;
+import com.chaos.form.ui.TextLabel;
 import com.chaos.form.ui.DropDownMenu;
 import com.chaos.form.FormBuilder;
 import com.chaos.media.DisplayVideo;
@@ -694,6 +696,7 @@ class Main extends Sprite
 	////////////////	
 
 	private function createFormDemo() : Sprite {
+
 		var content:Sprite = new Sprite();
 		content.x = 300;
 		content.visible = false;
@@ -712,7 +715,14 @@ class Main extends Sprite
 		
 		form.draw();
 
-		var gridPane:GridPane = new GridPane({"width":400,"height":140,"x":100,"y":form.y + form.height + 10});
+		var gridData:Array<Dynamic> = new Array<Dynamic>();
+		gridData.push({"firstName":"Erick","lastName":"Feiling","age":"40"});
+
+		var gridPane:GridPane = new GridPane({"width":400,"height":140,"x":100,"y":form.y + form.height + 10,"data":gridData});
+
+		gridPane.addColumn("First Name", TextLabel,"firstName", GridCellLayout.FIT);
+		gridPane.addColumn("Last Name", TextLabel,"lastName", GridCellLayout.FIT);
+		gridPane.addColumn("Age", TextLabel,"age", GridCellLayout.FIT);
 		
 		content.addChild(gridPane);
 		content.addChild(form);
