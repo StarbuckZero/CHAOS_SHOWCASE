@@ -716,9 +716,11 @@ class Main extends Sprite
 		form.draw();
 
 		var gridData:Array<Dynamic> = new Array<Dynamic>();
-		gridData.push({"firstName":"Erick","lastName":"Feiling","age":"40"});
+		gridData.push({"firstName":"Todd","lastName":"Williams","age":"30"});
+		gridData.push({"firstName":"Billy","lastName":"Bob","age":"25"});
+		gridData.push({"firstName":"Chris","lastName":"Johnson","age":"40"});
 
-		var gridPane:GridPane = new GridPane({"width":400,"height":140,"x":100,"y":form.y + form.height + 10,"data":gridData});
+		var gridPane:GridPane = new GridPane({"width":400,"height":140,"x":100,"y":form.y + form.height + 20,"data":gridData});
 
 		gridPane.addColumn("First Name", TextLabel,"firstName", GridCellLayout.FIT);
 		gridPane.addColumn("Last Name", TextLabel,"lastName", GridCellLayout.FIT);
