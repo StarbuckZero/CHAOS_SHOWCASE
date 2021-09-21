@@ -6,12 +6,10 @@
 	<window width="1280" height="720" />
 
 	<source path="Source" />
-
-	<!-- This will have to be pointed to haxelib at some point, right now change to the correct path on your PC -->
-	<source path="../_FRAMEWORK/CHAOS_UI_HX" /> 
 	
 	<haxelib name="openfl" />
 	<haxelib name="actuate" />
+	<haxelib name="chaos-framework" />
 	
 	<assets path="Assets" rename="assets" />
 	
