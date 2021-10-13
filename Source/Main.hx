@@ -701,16 +701,16 @@ class Main extends Sprite
 		content.x = 300;
 		content.visible = false;
 
-		var form:FormBuilder = new FormBuilder({"width":400,"height":140,"x":100,"y":100});
+		var form:FormBuilder = new FormBuilder({"width":400,"backgroundColor":0xFFFFFF,"height":140,"x":100,"y":100});
 		
 		// Only setting the drop down
 		var comboData:Array<Dynamic> = new Array<Dynamic>();
 		comboData.push({"text":"Male", "value":"M"});
 		comboData.push({"text":"Female", "value":"F"});
 
-		form.addFormElement("First Name","firstName",InputField);
-		form.addFormElement("Last Name","lastName",InputField);
-		form.addFormElement("Age","age",NumberField);
+		form.addFormElement("First Name","firstName",InputField,{"textColor":0});
+		form.addFormElement("Last Name","lastName",InputField,{"textColor":0});
+		form.addFormElement("Age","age",NumberField,{"textColor":0});
 		form.addFormElement("Sex","sex",DropDownMenu, {"data":comboData});
 		
 		form.draw();
